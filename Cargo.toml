@@ -1,0 +1,7 @@
+[package]
+name = "ruspledb"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytebuffer = "2.0.1"
