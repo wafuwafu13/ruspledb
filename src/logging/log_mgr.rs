@@ -3,6 +3,7 @@ use bytebuffer::ByteBuffer;
 
 use super::log_iterator::LogIterator;
 
+#[derive(Clone, PartialEq, Debug)]
 pub struct LogMgr {
     fm: FileMgr,
     log_file: String,
@@ -13,7 +14,7 @@ pub struct LogMgr {
 }
 
 impl LogMgr {
-    pub fn new(mut fm: FileMgr, log_file: &mut String) -> Self {
+    pub fn new(mut fm: &mut FileMgr, log_file: &mut String) -> Self {
         let mut buffer = ByteBuffer::new();
         buffer.resize(fm.block_size().try_into().unwrap());
         let mut log_page = Page::new_from_buffer(&mut buffer);
@@ -26,7 +27,7 @@ impl LogMgr {
             fm.read(&mut current_blk, &mut log_page)
         }
         LogMgr {
-            fm,
+            fm: fm.to_owned(),
             log_file: log_file.to_string(),
             log_page,
             current_blk,

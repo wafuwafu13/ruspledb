@@ -10,7 +10,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Debug)]
 pub struct FileMgr {
     pub db_dir: String,
     pub block_size: u64,

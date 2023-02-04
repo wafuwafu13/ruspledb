@@ -60,9 +60,9 @@ fn integration_log() {
         fs::remove_dir_all(db_dir).unwrap();
     }
     let block_size = 400;
-    let fm = FileMgr::new(db_dir.to_string(), block_size);
+    let mut fm = FileMgr::new(db_dir.to_string(), block_size);
     let log_file = "ruspledb.log";
-    let mut lm = LogMgr::new(fm, &mut log_file.to_string());
+    let mut lm = LogMgr::new(&mut fm, &mut log_file.to_string());
     print_log_records(&mut lm, "The initial empty log file:".to_string());
     println!("done");
     create_log_records(&mut lm, 1, 35);

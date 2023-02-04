@@ -1,6 +1,7 @@
 use bytebuffer::ByteBuffer;
 use std::ops::Add;
 
+#[derive(Clone, PartialEq, Debug)]
 pub struct Page {
     block_size: u64,
     pub buffer: ByteBuffer,
@@ -8,10 +9,9 @@ pub struct Page {
 
 impl Page {
     pub fn new(block_size: u64) -> Self {
-        Page {
-            block_size,
-            buffer: ByteBuffer::new(),
-        }
+        let mut buffer = ByteBuffer::new();
+        buffer.resize(block_size.try_into().unwrap());
+        Page { block_size, buffer }
     }
 
     pub fn new_from_buffer(buffer: &mut ByteBuffer) -> Self {
