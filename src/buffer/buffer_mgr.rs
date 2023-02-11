@@ -8,11 +8,12 @@ use crate::{
     logging::log_mgr::LogMgr,
 };
 
+#[derive(Clone)]
 pub struct BufferMgr {
     fm: FileMgr,
     lm: LogMgr,
     buffer_size: usize,
-    buffer_pool: Vec<Buffer>,
+    pub buffer_pool: Vec<Buffer>,
     available_num: i32,
     max_time: u64,
 }
@@ -40,6 +41,14 @@ impl BufferMgr {
 
     pub fn available(&mut self) -> i32 {
         self.available_num
+    }
+
+    pub fn flush_all(&mut self, tx_num: i32) {
+        for buffer in self.buffer_pool.iter_mut() {
+            if buffer.modifying_tx() == tx_num {
+                buffer.flush()
+            }
+        }
     }
 
     pub fn unpin(&mut self, buffer: &mut Buffer) {

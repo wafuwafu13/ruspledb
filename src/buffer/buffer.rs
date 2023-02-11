@@ -40,8 +40,8 @@ impl Buffer {
         self.blk.to_owned()
     }
 
-    pub fn set_modified(&mut self, txnum: i32, lsn: i32) {
-        self.tx_num = txnum;
+    pub fn set_modified(&mut self, tx_num: i32, lsn: i32) {
+        self.tx_num = tx_num;
         if lsn >= 0 {
             self.lsn = lsn;
         }
@@ -49,6 +49,10 @@ impl Buffer {
 
     pub fn is_pinned(&mut self) -> bool {
         self.pins > 0
+    }
+
+    pub fn modifying_tx(&mut self) -> i32 {
+        self.tx_num
     }
 
     pub fn assign_to_block(&mut self, blk: &mut BlockId) {

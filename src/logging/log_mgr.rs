@@ -9,8 +9,8 @@ pub struct LogMgr {
     log_file: String,
     log_page: Page,
     current_blk: BlockId,
-    latest_lsn: usize,
-    last_saved_lsn: usize,
+    latest_lsn: i64,
+    last_saved_lsn: i64,
 }
 
 impl LogMgr {
@@ -41,7 +41,7 @@ impl LogMgr {
         LogIterator::new(&mut self.fm, &mut self.current_blk)
     }
 
-    pub fn append(&mut self, log_rec: Vec<u8>) -> usize {
+    pub fn append(&mut self, log_rec: Vec<u8>) -> i64 {
         let mut boundary = self.log_page.get_u64(0);
         let rec_size = log_rec.len();
         let bytes_needed = rec_size + 4;
@@ -82,11 +82,11 @@ impl LogMgr {
         blk
     }
 
-    pub fn get_last_saved_lsn(&mut self) -> usize {
+    pub fn get_last_saved_lsn(&mut self) -> i64 {
         self.last_saved_lsn
     }
 
-    pub fn flush_with_lsn(&mut self, lsn: usize) {
+    pub fn flush_with_lsn(&mut self, lsn: i64) {
         if lsn >= self.last_saved_lsn {
             self.flush()
         }

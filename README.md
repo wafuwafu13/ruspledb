@@ -9,9 +9,9 @@ This is Rust implementation of [SimpleDB](http://cs.bc.edu/~sciore/simpledb/) by
 |3|File Manager|✔️|
 |4|Log Manager|✔️|
 |4|Buffer Manager|✔️|
-|5|Recovery Manager| |
-|5|Concurrency Manager| |
-|5|Transaction| |
+|5|Recovery Manager|✔️|
+|5|Concurrency Manager|✔️|
+|5|Transaction|✔️|
 |6|Record Pages| |
 |6|Table Scans| |
 |7|Metadata Manager| |
