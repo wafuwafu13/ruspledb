@@ -12,8 +12,8 @@ This is Rust implementation of [SimpleDB](http://cs.bc.edu/~sciore/simpledb/) by
 |5|Recovery Manager|✔️|
 |5|Concurrency Manager|✔️|
 |5|Transaction|✔️|
-|6|Record Pages| |
-|6|Table Scans| |
+|6|Record Pages|✔️|
+|6|Table Scans|▲|
 |7|Metadata Manager| |
 |8|Select Scans, Project Scans, Product Scans| |
 |9|Parser| |

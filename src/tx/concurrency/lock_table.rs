@@ -4,6 +4,7 @@ use crate::file::block_id::BlockId;
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+#[derive(Clone)]
 pub struct LockTable {
     max_time: u64,
     locks: HashMap<BlockId, usize>,

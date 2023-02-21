@@ -11,6 +11,7 @@ use bytebuffer::ByteBuffer;
 
 use super::buffer_list::BufferList;
 
+#[derive(Clone)]
 pub struct Transaction {
     fm: FileMgr,
     lm: LogMgr,
@@ -93,7 +94,14 @@ impl Transaction {
     pub fn get_int(&mut self, blk: &mut BlockId, offset: u64) -> u64 {
         self.concurrency_mgr.s_lock(blk);
         let mut buffer = self.my_buffers.get_buffer(blk).unwrap().to_owned();
+        // println!("{:?}", buffer.contents());
         buffer.contents().get_u64(offset.try_into().unwrap())
+    }
+
+    pub fn get_int_u32(&mut self, blk: &mut BlockId, offset: u64) -> u32 {
+        self.concurrency_mgr.s_lock(blk);
+        let mut buffer = self.my_buffers.get_buffer(blk).unwrap().to_owned();
+        buffer.contents().get_u32(offset.try_into().unwrap())
     }
 
     pub fn get_string(&mut self, blk: &mut BlockId, offset: u64) -> String {
@@ -113,6 +121,27 @@ impl Transaction {
         }
         let mut page = buffer.contents();
         page.set_u64(offset.try_into().unwrap(), val);
+        buffer.set_modified(self.tx_num.try_into().unwrap(), lsn.try_into().unwrap());
+        // need to set contents directly
+        buffer.set_contents(page);
+        // update my_buffers
+        self.my_buffers.set_buffer(blk.to_owned(), buffer.clone());
+        // update buffer_pool
+        // TODO: set index correctly
+        self.bm.buffer_pool[0] = buffer;
+    }
+
+    pub fn set_int_u32(&mut self, blk: &mut BlockId, offset: u64, val: u32, ok_to_log: bool) {
+        self.concurrency_mgr.x_lock(blk);
+        let mut buffer = self.my_buffers.get_buffer(blk).unwrap().to_owned();
+        let mut lsn = -1;
+        if ok_to_log {
+            let old_val = buffer.contents().get_u64(offset.try_into().unwrap());
+            let mut blk = buffer.block().unwrap();
+            lsn = SetIntRecord::write_to_log(&mut self.lm, self.tx_num, &mut blk, offset, old_val)
+        }
+        let mut page = buffer.contents();
+        page.set_u32(offset.try_into().unwrap(), val);
         buffer.set_modified(self.tx_num.try_into().unwrap(), lsn.try_into().unwrap());
         // need to set contents directly
         buffer.set_contents(page);
@@ -148,6 +177,22 @@ impl Transaction {
         // update buffer_pool
         // TODO: set index correctly
         self.bm.buffer_pool[0] = buffer;
+    }
+
+    pub fn size(&mut self, file_name: &str) -> u64 {
+        let mut dummy_blk = BlockId::new(file_name.to_string(), 0);
+        self.concurrency_mgr.s_lock(&mut dummy_blk);
+        self.fm.length(file_name.to_string())
+    }
+
+    pub fn append(&mut self, file_name: &str) -> BlockId {
+        let mut dummy_blk = BlockId::new(file_name.to_string(), 0);
+        self.concurrency_mgr.x_lock(&mut dummy_blk);
+        self.fm.append(&mut file_name.to_string())
+    }
+
+    pub fn block_size(&mut self) -> u64 {
+        self.fm.block_size
     }
 
     fn next_tx_num(mut self) -> usize {

@@ -5,6 +5,7 @@ use crate::{
     file::block_id::BlockId,
 };
 
+#[derive(Clone)]
 pub struct BufferList {
     bm: BufferMgr,
     pins: Vec<BlockId>,

@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{file::block_id::BlockId, tx::concurrency::lock_table::LockTable};
 
+#[derive(Clone)]
 pub struct ConcurrencyMgr {
     lock_tbl: LockTable,
     locks: HashMap<BlockId, String>,
